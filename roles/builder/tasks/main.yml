@@ -1,0 +1,51 @@
+---
+- name: 1. Ensure tools package is present
+  apt:
+    name:
+      - default-jdk
+      - maven
+      - git
+    state: present
+    update_cache: yes
+  become: true
+
+- name: 2. Create build directory
+  file:
+    path: "{{ build_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: 3. Clone git repo
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ build_dir }}"
+    update: yes
+
+- name: 4. Build project with Maven
+  command: mvn clean package -DskipTests
+  args:
+    chdir: "{{ build_dir }}"
+  register: maven_build
+  failed_when: false
+
+- name: 5. Fail if Maven build failed
+  fail:
+    msg: |
+      Maven build failed.
+      Return code: {{ maven_build.rc }}
+      Stderr: {{ maven_build.stderr | default('') }}
+  when: maven_build.rc != 0
+
+- name: 6. Find generated WAR file
+  find:
+    paths: "{{ build_dir }}/target"
+    patterns: "*.war"
+    recurse: yes
+  register: war_file
+
+- name: 7. Fail if no WAR found
+  fail:
+    msg: |
+      WAR file not found after build.
+      Searched in: {{ build_dir }}/target
+  when: war_file.files | length == 0

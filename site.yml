@@ -1,0 +1,12 @@
+---
+- name: 1. Build artifact ob build-node
+  hosts: build
+  become: true
+  roles:
+    - builder
+
+- name: 2. Deploy artifact on prod-node
+  hosts: prod
+  become: true
+  roles:
+    - deployer

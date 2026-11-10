@@ -1,0 +1,5 @@
+---
+app_name: example-tomcat-war
+repo_url: "https://github.com/sharifullinartyom/ansible_roles_test.git"
+build_dir: "/opt/build/{{ app_name }}"
+artifact_local_dir: ../artifacts
