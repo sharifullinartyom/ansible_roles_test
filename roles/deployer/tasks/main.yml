@@ -1,0 +1,26 @@
+---
+- name: 1. Ensure Tomcat9 package is present
+  apt:
+    name: tomcat9
+    state: present
+
+- name: 2. Stop Tomcat before replacing WAR
+  systemd:
+    name: tomcat9
+    state: stopped
+  when: tomcat_stop_before_deploy | default(true) | bool
+
+- name: 3. Deploy WAR to Tomcat webapps
+  copy:
+    src: "/tmp/{{ app_name }}/"
+    dest: "{{ app_dir }}/"
+    owner: tomcat
+    group: tomcat
+    mode: "0644"
+  notify: Reload Tomcat
+    
+- name: 4. Start Tomcat after deploy
+  systemd:
+    name: tomcat9
+    enabled: yes
+    state: started

@@ -1,0 +1,5 @@
+---
+- name: Reload Tomcat
+  systemd:
+    name: tomcat9
+    state: started

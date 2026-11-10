@@ -1,0 +1,6 @@
+---
+app_name: example-tomcat-war
+app_context: example-tomcat-war
+artifact_local_dir: ../artifacts
+app_dir: "/var/lib/tomcat9/webapps"
+tomcat_port: 8080
